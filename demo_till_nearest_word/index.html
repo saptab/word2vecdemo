@@ -478,6 +478,7 @@ async function loadModel(op=1) {
              errornew.innerHTML = "The word is out of vocabulary.";
         }
         else{
+	    errornew.innerHTML = "";	
             new_vec = tf.tensor1d(data.vectors[word]);
             new_vec = normalization(new_vec);
 
