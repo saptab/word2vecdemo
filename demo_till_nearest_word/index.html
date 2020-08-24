@@ -53,7 +53,7 @@
 <h2>Enter a New Word</h2>
 
 <form id="myForm" onsubmit="return false">
-  Word: <input type="text" name="word" value="apple"><br>
+  Word: <input type="text" name="word" value="apple">
 <input type="submit" onclick="loadModel(0)" value="Submit">
 </form>
 
@@ -478,6 +478,7 @@ async function loadModel(op=1) {
              errornew.innerHTML = "The word is out of vocabulary.";
         }
         else{
+            document.getElementById("myForm").elements[0].value = '';		
 	    errornew.innerHTML = "";	
             new_vec = tf.tensor1d(data.vectors[word]);
             new_vec = normalization(new_vec);
