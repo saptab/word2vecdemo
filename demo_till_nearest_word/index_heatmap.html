@@ -149,10 +149,20 @@ async function plot(data){
      if (op == 0){
          Plotly.react('myDiv', datap, layout);
      }
-/*
 
-func_temp = myPlot.on('plotly_hover', function(datap){
+myPlot.on('plotly_hover', function(datap){
       infotext = datap.points.map(function(d){
+      var data = [
+      {
+        z: [[1, null, 30, 50, 1], [20, 1, 60, 80, 30], [30, 60, 1, -10, 20]],
+        x: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        y: ['Morning', 'Afternoon', 'Evening'],
+        type: 'heatmap',
+        hoverongaps: false
+      }
+     ];
+
+Plotly.newPlot('myDiv', data);
       word = d.text;
       Tvectors = nearest(data, data.vectors[word],1,5);
       console.log(Tvectors);
@@ -164,13 +174,10 @@ func_temp = myPlot.on('plotly_hover', function(datap){
     //hoverInfo.innerHTML = infotext.join('<br/>');
 });
 
-console.log(func_temp);
-
 myPlot.on('plotly_unhover', function(datap){
     hoverInfo.innerHTML = '';
 });
 
-*/
 }
 
 function nearest_org(vec){

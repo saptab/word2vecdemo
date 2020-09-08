@@ -6,7 +6,6 @@
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js" charset="utf-8"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis@1.0.2/dist/tfjs-vis.umd.min.js"></script>
@@ -18,14 +17,11 @@
 
     <script src="https://unpkg.com/mathjs@7.1.0/dist/math.min.js"></script>
 
-    <link rel="stylesheet" href="styles/styles.css" />
+    <link rel="stylesheet" href="styles/styles1.css" />
 
-<<<<<<< HEAD
-=======
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://unpkg.com/d3-3d/build/d3-3d.min.js"></script>
->>>>>>> ae34e30c20fb1eab063fff388e2cb680db1dd7b4
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
@@ -48,78 +44,95 @@
 
 <div id='myDiv'><!-- Plotly plot will be drawn inside this DIV -->
 
+</div>
+
+<div id='myDiv1'><!-- Plotly plot will be drawn inside this DIV -->
 
 </div>
 
+<div id="hoverinfo" style="margin-left:80px;">
+
+</div>
+
+<div id="hoverinfo1" style="margin-left:80px;">
+
+</div>
+
+
 <h2>Enter a New Word</h2>
 
-<<<<<<< HEAD
-<form id="myForm" action="action_page.php">
-=======
-<form id="myForm">
->>>>>>> ae34e30c20fb1eab063fff388e2cb680db1dd7b4
-  Word: <input type="text" name="word" value="apple"><br>
-</form> 
-<button id="submit" onclick="loadModel(0)">Submit</button>
+<form id="myForm" onsubmit="return false">
+  Word: <input type="text" name="word" value="apple">
+<input type="submit" onclick="newwords(0)" value="Submit">
+</form>
 
+<div id="errornew" style="margin-left:80px;">
+
+</div>
 
 <script>
 
 let word2Vec;
-var x_vals,y_vals,z_vals, text_vals, op=1;//var data;
-word2Vec = ml5.word2vec("https://raw.githubusercontent.com/saptab/word2vecdemo/master/wordvecs77000.json",modelReady);
-//word2Vec = ml5.word2vec("https://raw.githubusercontent.com/saptab/word2vecdemo/master/wordvecs63490.json",modelReady);        
-//word2Vec = ml5.word2vec("https://raw.githubusercontent.com/ml5js/ml5-examples/master/p5js/Word2Vec/data/wordvecs10000.json",modelReady);
+var x_vals,y_vals,z_vals, text_vals, infotext, htext, min_near =1, max_near = 11, op=1, z_heat, y_heat, marker_col, last_col;//var data;
+var Tvectors = [];
+var Tvectors_man = '', Tvectors_woman = '', Tvectors_boy = '', Tvectors_girl = '', Tvectors_king = '', Tvectors_queen = '', Tvectors_prince = '', Tvectors_princess = '', Tvectors_nephew = '',Tvectors_niece = '', Tvectors_refrigerator = '',Tvectors_uncle = '', Tvectors_aunt = '',Tvectors_father = '', Tvectors_mother = '',Tvectors_son = '', Tvectors_daughter = '',Tvectors_husband = '', Tvectors_wife = '', Tvectors_newword = '';
+var wordvectors=42;
 
-function modelReady() {
-  console.log("Model Loaded!");
+function modelLoaded() {
+  	console.log("Model Loaded!");
 }
 
 function normalization(a){
         return tf.div(a, tf.norm(a));
 }
 
-function plot(data){
-        /*
-        alert(y_vals);
-        alert(z_vals);
-        alert(x_vals);
-        */
-        var datap=[
+function nearest(data, input, start, max) {
+    var nearestVectors = [];
+    Object.keys(wordvectors.vectors).forEach(function (word) {
+      const distance = tf.util.distSquared(input, data.vectors[word]);
+      nearestVectors.push({ word, distance });
+    });
+    nearestVectors.sort((a, b) => a.distance - b.distance);
+    return nearestVectors.slice(start, max);
+}
+
+async function plot(op,data){
+	var myPlot = document.getElementById('myDiv'),
+     myPlot1 = document.getElementById('myDiv1'),
+    	hoverInfo = document.getElementById('hoverinfo'),
+     hoverInfo1 = document.getElementById('hoverinfo1'),
+    	datap=[
         {
            opacity:1,
            type: 'scatter3d',
+           //type:'heatmap',
            x: x_vals,
            y: y_vals,
            z: z_vals,
            mode: 'markers+text',
            text: text_vals,
+           hoverinfo:'text',
+           hovertext:htext,
            marker: {
 		  size: 4,
+                  color:marker_col,
 		  line: {
 		  color: 'rgba(0, 0, 255, 0.14)',
 		  width: 0.5
                   },
 		  opacity: 0.8
-            },
+            }
+    	}],
+    
+    	max_y_vals = Math.max.apply(null,y_vals),
+    	min_y_vals = Math.min.apply(null,y_vals),
 
-        },
-        ];
+    	max_z_vals = Math.max.apply(null,z_vals),
+    	min_z_vals = Math.min.apply(null,z_vals),
 
-        var max_y_vals = Math.max.apply(null,y_vals);
-        var min_y_vals = Math.min.apply(null,y_vals);
-
-        var max_z_vals = Math.max.apply(null,z_vals);
-        var min_z_vals = Math.min.apply(null,z_vals);
-
-        var max_x_vals = Math.max.apply(null,x_vals);
-        var min_x_vals = Math.min.apply(null,x_vals);
-        
-        //alert(max_x_vals);
-        //alert(min_x_vals);
-
-
-        var layout = {
+    	max_x_vals = Math.max.apply(null,x_vals),
+    	min_x_vals = Math.min.apply(null,x_vals),
+    	layout = {
         hovermode:'closest',
         scene:{
 	        aspectmode: "manual",
@@ -144,13 +157,98 @@ function plot(data){
                 range: [min_z_vals-0.1, max_z_vals+0.1],
         }},
 
-        };
+     };
 
-        Plotly.newPlot('myDiv', datap, layout);
-        
+     var datah = [
+     {
+	z: z_heat, 
+        y: y_heat, 
+        type: 'heatmap',
+        hoverinfo: y_heat,
+        hoverongaps: false
+     }
+     ];
+
+     Plotly.newPlot('myDiv1', datah);
+     Plotly.newPlot('myDiv', datap, layout);
+
+
+     if (op == 1){
+         console.log(op);
+	    Plotly.newPlot('myDiv1', datah);
+         Plotly.newPlot('myDiv', datap, layout);
+         
+     }
+
+     if (op == 0){
+         console.log(op);
+         Plotly.newPlot('myDiv1', datah);
+         Plotly.newPlot('myDiv', datap, layout);
+         last_col = marker_col.pop();
+         console.log(marker_col);
+         marker_col.push('black');
+         console.log(marker_col);  	    
+     }
+     
+     /*
+     if (op == 1){
+         console.log(op);
+         Plotly.newPlot('myDiv1', datah);
+         Plotly.newPlot('myDiv', datap, layout);
+     }
+
+     if (op == 0){
+         console.log(op);
+         Plotly.react('myDiv1', datah);
+         Plotly.react('myDiv', datap, layout);
+     }
+     */
+
+myPlot.on('plotly_click', function(datap){
+    infotext = datap.points.map(function(d){
+      word = d.text;
+      //Tvectors = nearest(data, data.vectors[word],1,5);
+      //console.log(Tvectors);
+      //htext = Tvectors[1].word;
+      return word;
+      //return (d.text+': x= '+d.x+', y= '+d.y.toPrecision(3));
+    });
+    //hoverInfo.innerHTML = infotext.join('<br/>');
+     hoverInfo.innerHTML = infotext.join('<br/>');
+});
+
+console.log(hoverinfo);
+
+myPlot1.on('plotly_click', function(datah){
+    infotext = datah.points.map(function(d){
+      word = d.y;
+      //Tvectors = nearest(data, data.vectors[word],1,5);
+      //console.log(Tvectors);
+      //htext = Tvectors[1].word;
+      return word;
+      //return (d.text+': x= '+d.x+', y= '+d.y.toPrecision(3));
+    });
+    hoverInfo1.innerHTML = infotext.join('<br/>');
+});
+
+console.log(hoverInfo1);
+
+myPlot.on('plotly_unclick', function(datap){
+    hoverInfo.innerHTML = '';
+});
+
 }
 
-async function loadModel(op=1) {
+function nearest_org(vec){
+     var text = ''
+     text = "Original word:<br>"+ vec[0].word+"<br>Nearest words:<br>1. " + vec[1].word;
+     for (let i = 2; i < vec.length; i += 1) {
+           text+="<br>"+i+". "+vec[i].word
+     }
+     return text;
+}
+
+async function loadModel() {
         //model from pypi word2vec with phrases
         const {data} = await axios.get("https://raw.githubusercontent.com/saptab/word2vecdemo/master/wordvecs77000.json");
 
@@ -160,50 +258,53 @@ async function loadModel(op=1) {
         //model provided by ml5 library
         //const {data} = await axios.get("https://raw.githubusercontent.com/ml5js/ml5-examples/master/p5js/Word2Vec/data/wordvecs10000.json");
 
-        //alert(op);
-        if (op==1) {
+        wordvectors = data;
+}
+
+async function defaultwords(op=1) {
         //words2vectors
-        let man = tf.tensor1d(data.vectors["man"]);
+        await loadModel();
+        let man = tf.tensor1d(wordvectors.vectors["man"]);
         man = normalization(man);
-        let woman = tf.tensor1d(data.vectors["woman"]);
+        let woman = tf.tensor1d(wordvectors.vectors["woman"]);
         woman = normalization(woman);
-        let king = tf.tensor1d(data.vectors["king"]);
+        let king = tf.tensor1d(wordvectors.vectors["king"]);
         king = normalization(king);
-        let queen = tf.tensor1d(data.vectors["queen"]);
+        let queen = tf.tensor1d(wordvectors.vectors["queen"]);
         queen = normalization(queen);
-        let prince = tf.tensor1d(data.vectors["prince"]);
+        let prince = tf.tensor1d(wordvectors.vectors["prince"]);
         prince = normalization(prince);
-        let princess = tf.tensor1d(data.vectors["princess"]);
+        let princess = tf.tensor1d(wordvectors.vectors["princess"]);
         princess = normalization(princess);
-        let husband = tf.tensor1d(data.vectors["husband"]);
+        let husband = tf.tensor1d(wordvectors.vectors["husband"]);
         husband = normalization(husband);
-        let wife = tf.tensor1d(data.vectors["wife"]);
+        let wife = tf.tensor1d(wordvectors.vectors["wife"]);
         wife = normalization(wife);
-        let father = tf.tensor1d(data.vectors["father"]);
+        let father = tf.tensor1d(wordvectors.vectors["father"]);
         father = normalization(father);
-        let mother = tf.tensor1d(data.vectors["mother"]);
+        let mother = tf.tensor1d(wordvectors.vectors["mother"]);
         mother = normalization(mother);
-        let son = tf.tensor1d(data.vectors["son"]);
+        let son = tf.tensor1d(wordvectors.vectors["son"]);
         son = normalization(son);
-        let daughter = tf.tensor1d(data.vectors["daughter"]);
+        let daughter = tf.tensor1d(wordvectors.vectors["daughter"]);
         daughter = normalization(daughter);
-        let uncle = tf.tensor1d(data.vectors["uncle"]);
+        let uncle = tf.tensor1d(wordvectors.vectors["uncle"]);
         uncle = normalization(uncle);
-        let aunt = tf.tensor1d(data.vectors["aunt"]);
+        let aunt = tf.tensor1d(wordvectors.vectors["aunt"]);
         aunt = normalization(aunt);
-        let nephew = tf.tensor1d(data.vectors["nephew"]);
+        let nephew = tf.tensor1d(wordvectors.vectors["nephew"]);
         nephew = normalization(nephew);
-        let niece = tf.tensor1d(data.vectors["niece"]);
+        let niece = tf.tensor1d(wordvectors.vectors["niece"]);
         niece = normalization(niece);
-        let boy = tf.tensor1d(data.vectors["boy"]);
+        let boy = tf.tensor1d(wordvectors.vectors["boy"]);
         boy = normalization(boy);
-        let girl = tf.tensor1d(data.vectors["girl"]);
+        let girl = tf.tensor1d(wordvectors.vectors["girl"]);
         girl = normalization(girl);
-        let male = tf.tensor1d(data.vectors["male"]);
+        let male = tf.tensor1d(wordvectors.vectors["male"]);
         male = normalization(male);
-        let female = tf.tensor1d(data.vectors["female"]);
+        let female = tf.tensor1d(wordvectors.vectors["female"]);
         female = normalization(female);
-        let refrigerator = tf.tensor1d(data.vectors["refrigerator"]);
+        let refrigerator = tf.tensor1d(wordvectors.vectors["refrigerator"]);
         refrigerator = normalization(refrigerator);
         //Genderwise subtractions
         let diff_gmw = tf.sub(man, woman);
@@ -410,30 +511,90 @@ async function loadModel(op=1) {
 
         text_vals = ["man", "woman", "boy", "girl", "king", "queen", "prince", "princess", "nephew", "niece", "refrigerator", "uncle","aunt", "father", "mother","son","daughter","husband","wife"];
 
-        plot();
-        }
+        marker_col = ['black','black','black','black','black','black','black','black','black','black','black','black','black','black','black','black','black','black','black'];
 
-        if (op == 0){
-        var word = document.getElementById("myForm").elements[0].value;
+        Tvectors_man = nearest_org(nearest(wordvectors, wordvectors.vectors["man"],min_near,max_near));
 
-        let new_vec = tf.tensor1d(data.vectors[word]);
-        new_vec = normalization(new_vec);
+        Tvectors_woman = nearest_org(nearest(wordvectors, wordvectors.vectors["woman"],min_near,max_near));
 
-        let new_vec_x =  tf.sub(1 , tf.dot(new_vec,MEAN_no_gender_no_age)).dataSync()[0];
-        let new_vec_y =  tf.dot(new_vec,MEAN_gender).dataSync()[0];
-        let new_vec_z =  tf.dot(new_vec,MEAN_age).dataSync()[0];
- 
-        x_vals.push(new_vec_x);
-        y_vals.push(new_vec_y);
-        z_vals.push(new_vec_z);
-        text_vals.push(word);
+        Tvectors_boy = nearest_org(nearest(wordvectors, wordvectors.vectors["boy"],min_near,max_near));
 
-        plot();
-        }
+        Tvectors_girl = nearest_org(nearest(wordvectors, wordvectors.vectors["girl"],min_near,max_near));
 
+        Tvectors_king = nearest_org(nearest(wordvectors, wordvectors.vectors["king"],min_near,max_near));
+
+        Tvectors_queen = nearest_org(nearest(wordvectors, wordvectors.vectors["queen"],min_near,max_near));
+
+        Tvectors_prince = nearest_org(nearest(wordvectors, wordvectors.vectors["prince"],min_near,max_near));
+
+        Tvectors_princess = nearest_org(nearest(wordvectors, wordvectors.vectors["princess"],min_near,max_near));
+
+        Tvectors_nephew = nearest_org(nearest(wordvectors, wordvectors.vectors["nephew"],min_near,max_near));
+
+        Tvectors_niece = nearest_org(nearest(wordvectors, wordvectors.vectors["niece"],min_near,max_near));
+
+        Tvectors_refrigerator = nearest_org(nearest(wordvectors, wordvectors.vectors["refrigerator"],min_near,max_near));
+
+        Tvectors_uncle = nearest_org(nearest(wordvectors, wordvectors.vectors["uncle"],min_near,max_near));
+
+        Tvectors_aunt = nearest_org(nearest(wordvectors, wordvectors.vectors["aunt"],min_near,max_near));  
+
+        Tvectors_father = nearest_org(nearest(wordvectors, wordvectors.vectors["father"],min_near,max_near));
+
+        Tvectors_mother = nearest_org(nearest(wordvectors, wordvectors.vectors["mother"],min_near,max_near));
+
+        Tvectors_son = nearest_org(nearest(wordvectors, wordvectors.vectors["son"],min_near,max_near));
+
+        Tvectors_daughter = nearest_org(nearest(wordvectors, wordvectors.vectors["daughter"],min_near,max_near));
+
+        Tvectors_husband = nearest_org(nearest(wordvectors, wordvectors.vectors["husband"],min_near,max_near));
+
+        Tvectors_wife = nearest_org(nearest(wordvectors, wordvectors.vectors["wife"],min_near,max_near));
+
+        htext = [Tvectors_man, Tvectors_woman, Tvectors_boy, Tvectors_girl, Tvectors_king, Tvectors_queen, Tvectors_prince, Tvectors_princess, Tvectors_nephew, Tvectors_niece, Tvectors_refrigerator, Tvectors_uncle, Tvectors_aunt, Tvectors_father, Tvectors_mother, Tvectors_son, Tvectors_daughter, Tvectors_husband, Tvectors_wife];
+
+z_heat=[normalization(wordvectors.vectors["man"]),normalization(wordvectors.vectors["woman"]),normalization(wordvectors.vectors["boy"]),normalization(wordvectors.vectors["girl"]),normalization(wordvectors.vectors["king"]),normalization(wordvectors.vectors["queen"]),normalization(wordvectors.vectors["prince"]),normalization(wordvectors.vectors["princess"]),normalization(wordvectors.vectors["nephew"]),normalization(wordvectors.vectors["niece"]),normalization(wordvectors.vectors["refrigerator"]),normalization(wordvectors.vectors["uncle"]),normalization(wordvectors.vectors["aunt"]),normalization(wordvectors.vectors["father"]),normalization(wordvectors.vectors["mother"]),normalization(wordvectors.vectors["son"]),normalization(wordvectors.vectors["daughter"]),normalization(wordvectors.vectors["husband"]),normalization(wordvectors.vectors["wife"])],   
+
+z_heat=[wordvectors.vectors["man"],wordvectors.vectors["woman"],wordvectors.vectors["boy"],wordvectors.vectors["girl"],wordvectors.vectors["king"],wordvectors.vectors["queen"],wordvectors.vectors["prince"],wordvectors.vectors["princess"],wordvectors.vectors["nephew"],wordvectors.vectors["niece"],wordvectors.vectors["refrigerator"],wordvectors.vectors["uncle"],wordvectors.vectors["aunt"],wordvectors.vectors["father"],wordvectors.vectors["mother"],wordvectors.vectors["son"],wordvectors.vectors["daughter"],wordvectors.vectors["husband"],wordvectors.vectors["wife"]],   
+y_heat= ['man', 'woman', 'boy','girl','king','queen','prince','princess','nephew','niece','refrigerator','uncle','aunt','father','mother','son','daughter','husband','wife'],
+
+        plot(op,wordvectors);
 }
 
-loadModel();
+async function newwords(op=0) {
+        let new_vec;
+        var word = document.getElementById("myForm").elements[0].value;
+        if (wordvectors.vectors[word] == null){
+             errornew.innerHTML = "The word is out of vocabulary.";
+        }
+        else{
+            document.getElementById("myForm").elements[0].value = '';		
+	    errornew.innerHTML = "";	
+            new_vec = tf.tensor1d(wordvectors.vectors[word]);
+            new_vec = normalization(new_vec);
+
+            let new_vec_x =  tf.sub(1 , tf.dot(new_vec,MEAN_no_gender_no_age)).dataSync()[0];
+            let new_vec_y =  tf.dot(new_vec,MEAN_gender).dataSync()[0];
+            let new_vec_z =  tf.dot(new_vec,MEAN_age).dataSync()[0];
+            Tvectors_newword = nearest_org(nearest(wordvectors, wordvectors.vectors[word],min_near,max_near));
+
+            x_vals.push(new_vec_x);
+            y_vals.push(new_vec_y);
+            z_vals.push(new_vec_z);
+            marker_col.push('red');
+            text_vals.push(word);
+            htext.push(Tvectors_newword);
+
+            z_heat.push(wordvectors.vectors[word]);
+            y_heat.push(word);
+            plot(op,wordvectors);
+        }
+}
+
+//steup();
+//loadModel();
+defaultwords();
+
 </script>
 
 </body>

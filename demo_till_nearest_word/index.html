@@ -53,7 +53,7 @@
 <h2>Enter a New Word</h2>
 
 <form id="myForm" onsubmit="return false">
-  Word: <input type="text" name="word" value="apple"><br>
+  Word: <input type="text" name="word" value="apple">
 <input type="submit" onclick="loadModel(0)" value="Submit">
 </form>
 
@@ -67,8 +67,10 @@
 <script>
 
 let word2Vec;
-var x_vals,y_vals,z_vals, text_vals, infotext, htext, min_near =1, max_near = 6, op=1;//var data;
+var x_vals,y_vals,z_vals, text_vals, infotext, htext, min_near =1, max_near = 12, op=1;//var data;
 var Tvectors = [];
+//var color_points = [];
+
 var Tvectors_man = '', Tvectors_woman = '', Tvectors_boy = '', Tvectors_girl = '', Tvectors_king = '', Tvectors_queen = '', Tvectors_prince = '', Tvectors_princess = '', Tvectors_nephew = '',Tvectors_niece = '', Tvectors_refrigerator = '',Tvectors_uncle = '', Tvectors_aunt = '',Tvectors_father = '', Tvectors_mother = '',Tvectors_son = '', Tvectors_daughter = '',Tvectors_husband = '', Tvectors_wife = '', Tvectors_newword = '';
 var wordvectors=42;
 
@@ -148,7 +150,8 @@ async function plot(data){
         }},
 
      };
-
+     //Plotly.newPlot('myDiv', datap, layout);
+     //*
      if (op == 1){
          Plotly.newPlot('myDiv', datap, layout);
      }
@@ -156,6 +159,7 @@ async function plot(data){
      if (op == 0){
          Plotly.react('myDiv', datap, layout);
      }
+     //*/
 }
 
 function nearest_org(vec){
@@ -167,7 +171,7 @@ function nearest_org(vec){
      return text;
 }
 
-async function loadModel(op=1) {
+async function loadModel(op) {
         //model from pypi word2vec with phrases
         const {data} = await axios.get("https://raw.githubusercontent.com/saptab/word2vecdemo/master/wordvecs77000.json");
 
@@ -468,7 +472,7 @@ async function loadModel(op=1) {
 
         htext = [Tvectors_man, Tvectors_woman, Tvectors_boy, Tvectors_girl, Tvectors_king, Tvectors_queen, Tvectors_prince, Tvectors_princess, Tvectors_nephew, Tvectors_niece, Tvectors_refrigerator, Tvectors_uncle, Tvectors_aunt, Tvectors_father, Tvectors_mother, Tvectors_son, Tvectors_daughter, Tvectors_husband, Tvectors_wife];
 
-        plot(data);
+        plot(data, op);
         }
 
         if (op == 0){
@@ -478,6 +482,8 @@ async function loadModel(op=1) {
              errornew.innerHTML = "The word is out of vocabulary.";
         }
         else{
+            document.getElementById("myForm").elements[0].value = '';
+            errornew.innerHTML = "";
             new_vec = tf.tensor1d(data.vectors[word]);
             new_vec = normalization(new_vec);
 
@@ -486,12 +492,14 @@ async function loadModel(op=1) {
             let new_vec_z =  tf.dot(new_vec,MEAN_age).dataSync()[0];
             Tvectors_newword = nearest_org(nearest(data, data.vectors[word],min_near,max_near));
 
+            console.log(nearest(data, data.vectors[word],min_near,max_near));
+
             x_vals.push(new_vec_x);
             y_vals.push(new_vec_y);
             z_vals.push(new_vec_z);
             text_vals.push(word);
             htext.push(Tvectors_newword);
-            plot(data);
+            plot(data, op);
         }
         }
 
