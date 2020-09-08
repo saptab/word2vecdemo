@@ -67,7 +67,11 @@
 <script>
 
 let word2Vec;
+<<<<<<< HEAD
 var x_vals,y_vals,z_vals, text_vals, infotext, htext, min_near =1, max_near = 12, op=1;//var data;
+=======
+var x_vals,y_vals,z_vals, text_vals, infotext, htext, min_near =1, max_near = 11, op=1;//var data;
+>>>>>>> 4f35166aea12a32385a53fa906d9370f4f4ce35f
 var Tvectors = [];
 //var color_points = [];
 
@@ -482,8 +486,13 @@ async function loadModel(op) {
              errornew.innerHTML = "The word is out of vocabulary.";
         }
         else{
+<<<<<<< HEAD
             document.getElementById("myForm").elements[0].value = '';
             errornew.innerHTML = "";
+=======
+            document.getElementById("myForm").elements[0].value = '';		
+	    errornew.innerHTML = "";	
+>>>>>>> 4f35166aea12a32385a53fa906d9370f4f4ce35f
             new_vec = tf.tensor1d(data.vectors[word]);
             new_vec = normalization(new_vec);
 

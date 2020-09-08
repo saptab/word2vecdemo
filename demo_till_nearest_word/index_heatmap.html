@@ -53,14 +53,14 @@
 <h2>Enter a New Word</h2>
 
 <form id="myForm" onsubmit="return false">
-  Word: <input type="text" name="word" value="apple"><br>
+  Word: <input type="text" name="word" value="apple">
 <input type="submit" onclick="loadModel(0)" value="Submit">
 </form>
 
 <script>
 
 let word2Vec;
-var x_vals,y_vals,z_vals, text_vals, infotext, htext, min_near =1, max_near = 6, op=1;//var data;
+var x_vals,y_vals,z_vals, text_vals, infotext, htext, min_near =1, max_near = 11, op=1;//var data;
 var Tvectors = [];
 var Tvectors_man = '', Tvectors_woman = '', Tvectors_boy = '', Tvectors_girl = '', Tvectors_king = '', Tvectors_queen = '', Tvectors_prince = '', Tvectors_princess = '', Tvectors_nephew = '',Tvectors_niece = '', Tvectors_refrigerator = '',Tvectors_uncle = '', Tvectors_aunt = '',Tvectors_father = '', Tvectors_mother = '',Tvectors_son = '', Tvectors_daughter = '',Tvectors_husband = '', Tvectors_wife = '', Tvectors_newword = '';
 var wordvectors=42;
@@ -495,6 +495,7 @@ async function loadModel(op=1) {
 
         if (op == 0){
         var word = document.getElementById("myForm").elements[0].value;
+        document.getElementById("myForm").elements[0].value = '';
         let new_vec = tf.tensor1d(data.vectors[word]);
         new_vec = normalization(new_vec);
 
