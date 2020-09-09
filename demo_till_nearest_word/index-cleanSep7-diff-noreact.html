@@ -256,7 +256,7 @@ async function plot(op,data){
     console.log(y_heat);
     console.log(z_heat);
     if (y_heat.includes(infotext[0])){
-       y_heat[index] = infotext[0]+sar[index];
+       y_heat[index] = sar[index] +infotext[0];
        console.log(y_heat[index]);
     }
     else{
