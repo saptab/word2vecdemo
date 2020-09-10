@@ -227,6 +227,7 @@ async function plot(op,data,word){
 		//console.log(banana);
 		banana = 'grape';
 		pflag = pflag + 1;
+<<<<<<< HEAD
 		infotext = datap.points.map(function(d){
 			word = d.text;
 			return word;
@@ -287,6 +288,101 @@ async function plot(op,data,word){
 			hoverInfo.innerHTML = '';
 		});
 	*/
+=======
+		console.log(pflag);
+    infotext = datap.points.map(function(d){
+      word = d.text;
+      return word;
+    });
+    /*
+    if (pflag >= 2){
+        console.log(preindex);
+        marker_col[preindex]='black';
+        console.log(marker_col[preindex]);
+    }
+    console.log(infotext[0]);
+    index1 = text_vals.indexOf(infotext[0]);
+    marker_col[index1]='red';
+    preindex=index1;
+    console.log(preindex);
+   
+    var datap=[
+        {
+           opacity:1,
+           type: 'scatter3d',
+           x: x_vals,
+           y: y_vals,
+           z: z_vals,
+           mode: 'markers+text',
+           text: text_vals,
+           hoverinfo:'text',
+           hovertext:htext,
+           marker: {
+		  size: 4,
+                  color:marker_col,
+		  opacity: 0.8
+            }
+    	}];
+    console.log("error1");
+    console.log(datap);
+    console.log(layout);
+    Plotly.newPlot('myDiv', datap, layout);
+    console.log("error2");
+    */
+
+    //console.log(infotext.join('<br/>'));
+    console.log("error3");
+    myPlot1.on('plotly_click', function(datah){
+    infotext1 = datah.points.map(function(d){
+      word = d.y;
+      return word;
+      
+    });
+    index = y_heat.indexOf(infotext1[0]);
+    console.log(infotext[0]);
+    console.log(infotext1[0]);
+    console.log(y_heat);
+    console.log(z_heat);
+    if (y_heat.includes(infotext[0])){
+       y_heat[index] = sar[index] +infotext[0];
+       console.log(y_heat[index]);
+    }
+    else{
+       y_heat[index] = infotext[0];   
+    }
+    normed_vec = normalization(wordvectors.vectors[infotext[0]]).dataSync();
+    z_heat[index] = normed_vec;
+    console.log(index);
+    console.log(y_heat);
+    console.log(z_heat);
+    var datah = [
+        {
+	  z: z_heat, 
+          zmin: -0.35,
+          zmax: 0.35,
+          y: y_heat, 
+          type: 'heatmap',
+          hoverongaps: false
+        }];
+    Plotly.newPlot('myDiv1', datah);
+    console.log(infotext1.join('<br/>'));
+
+    //hoverInfo1.innerHTML = infotext1.join('<br/>');
+    });
+    console.log("error4");
+    });
+
+    //console.log(infotext);
+    //console.log(hoverInfo);
+
+    //console.log(hoverInfo1);
+    /*
+    myPlot1 = document.getElementById('myDiv1');
+    myPlot.on('plotly_unclick', function(datap){
+    hoverInfo.innerHTML = '';
+    });
+    */
+>>>>>>> b8e19711ed289abb25882c1dd20b34bcd92f5404
 
 }
 
