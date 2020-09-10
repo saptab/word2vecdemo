@@ -301,9 +301,9 @@ function nearest_org(vec){
 
 async function loadModel() {
 	//model from pypi word2vec with phrases
-	//const {data} = await axios.get("https://www.cs.cmu.edu/afs/andrew/usr/sbandyop/www/wordvecs98331.json");
+        const {data} = await axios.get("https://www.cs.cmu.edu/afs/andrew/usr/sbandyop/www/wordvecs98331.json",{headers: {"Access-Control-Allow-Origin": "*"}});
 
-	const {data} = await axios.get("https://raw.githubusercontent.com/saptab/word2vecdemo/master/wordvecs77000.json");
+	//const {data} = await axios.get("https://raw.githubusercontent.com/saptab/word2vecdemo/master/wordvecs77000.json");
 
 	//model from gensim word2vec with senteces
 	//const {data} = await axios.get("https://raw.githubusercontent.com/saptab/word2vecdemo/master/wordvecs63490.json");
