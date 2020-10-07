@@ -2,7 +2,7 @@
 
 Please download only the demo_till_vecviz_with_color_delete folder.
 
-It displays the default words on a semantic plane in a scatter plot, adds new words to the scatter plot, prevents addition of out-of-vocabulary-words,deletes wors present in the scatter plot, shows nearest words for every word added, displays the vector visualizations of default words on the right, modifies the visualization of vectors by clicking on words from the scatter plot on the right. Any new word, added or clicked is identified in red color. If a new word is added or clicked, the previous word in the scatter plot becomes black again.
+It displays the default words on a semantic plane in a scatter plot, adds new words to the scatter plot, prevents addition of out-of-vocabulary-words,deletes words present in the scatter plot, shows nearest words for every word added, displays the vector visualizations of default words on the right, modifies the visualization of vectors by clicking on words from the scatter plot on the right. Any new word, added or clicked is identified in red color. If a new word is added or clicked, the previous word in the scatter plot becomes black again.
 
 The json files containing the word2vec mappings need not be downloaded.
 
