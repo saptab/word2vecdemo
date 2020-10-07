@@ -59,13 +59,23 @@ body {
 
 		</div>
 
-
+                <div id='myDiv'>
 		<h2>Enter a New Word</h2>
 
 		<form id="myForm" onsubmit="return false">
 			Word: <input type="text" name="word" value="apple">
 			<input type="submit" onclick="newwords(0)" value="Submit">
 		</form>
+                </div>
+
+                <div id='myDiv1'>
+                <h3>Delete a Word</h3>
+
+		<form id="del_Form" onsubmit="return false">
+			Word: <input type="text" name="word" value="apple">
+			<input type="submit" onclick="delete_words(0)" value="Submit">
+		</form>
+                </div>
 
 		<div id="errornew" style="margin-left:80px;">
 
@@ -301,9 +311,9 @@ function nearest_org(vec){
 
 async function loadModel() {
 	//model from pypi word2vec with phrases
-        const {data} = await axios.get("https://www.cs.cmu.edu/afs/andrew/usr/sbandyop/www/wordvecs98331.json",{headers: {"Access-Control-Allow-Origin": "*"}});
+        //const {data} = await axios.get("https://www.cs.cmu.edu/afs/andrew/usr/sbandyop/www/wordvecs98331.json",{headers: {"Access-Control-Allow-Origin": "*"}});
 
-	//const {data} = await axios.get("https://raw.githubusercontent.com/saptab/word2vecdemo/master/wordvecs77000.json");
+	const {data} = await axios.get("https://raw.githubusercontent.com/saptab/word2vecdemo/master/wordvecs77000.json");
 
 	//model from gensim word2vec with senteces
 	//const {data} = await axios.get("https://raw.githubusercontent.com/saptab/word2vecdemo/master/wordvecs63490.json");
@@ -649,6 +659,40 @@ async function newwords(op=0) {
 	}
 }
 
+async function delete_words(op=0) {
+	let old_vec;
+	var word = document.getElementById("del_Form").elements[0].value;
+	if (wordvectors.vectors[word] == null){
+		errornew.innerHTML = "The word is out of vocabulary.";
+	}
+        else if(!text_vals.includes(word)){
+		errornew.innerHTML = "The word is not present in the scatter plot.";
+        }
+	else{
+		document.getElementById("del_Form").elements[0].value = '';		
+		errornew.innerHTML = "";	
+		old_vec = tf.tensor1d(wordvectors.vectors[word]);
+		old_vec = normalization(old_vec);
+
+		let old_vec_x =  tf.sub(1 , tf.dot(old_vec,MEAN_no_gender_no_age)).dataSync()[0];
+		let old_vec_y =  tf.dot(old_vec,MEAN_gender).dataSync()[0];
+		let old_vec_z =  tf.dot(old_vec,MEAN_age).dataSync()[0];
+		
+		index_xvals =x_vals.indexOf(old_vec_x);
+		index_yvals =y_vals.indexOf(old_vec_y);
+		index_zvals =z_vals.indexOf(old_vec_z);
+		index_text_vals =text_vals.indexOf(word);
+                console.log(text_vals);                
+                x_vals.splice(index_xvals, 1);
+                y_vals.splice(index_yvals, 1);
+                z_vals.splice(index_zvals, 1);
+                text_vals.splice(index_text_vals, 1);
+                console.log(text_vals);
+
+                plot(op,wordvectors);
+	}
+}
+
 //steup();
 //loadModel();
 defaultwords();
@@ -658,4 +702,3 @@ defaultwords();
 	</body>
 
 </html>
-
