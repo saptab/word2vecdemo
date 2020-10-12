@@ -632,6 +632,9 @@ async function newwords(op=0) {
 	if (wordvectors.vectors[word] == null){
 		errornew.innerHTML = "The word is out of vocabulary.";
 	}
+	else if(text_vals.includes(word)){
+		errornew.innerHTML = "The word already exists in the scatter plot.";
+        }
 	else{
 		document.getElementById("myForm").elements[0].value = '';		
 		errornew.innerHTML = "";	
